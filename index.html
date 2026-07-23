@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A real AI chatbot project with a secure backend, chat history, and OpenAI API integration."
+    />
+    <title>Phoom | Real AI Chatbot</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="chat-panel" aria-label="AI chatbot">
+        <header class="chat-header">
+          <div>
+            <p class="eyebrow">Project 03</p>
+            <h1>Real AI Chatbot</h1>
+            <p class="subtitle">
+              A full-stack chatbot with secure API handling, local chat history, and real model responses.
+            </p>
+          </div>
+          <div class="status-card" id="serverStatus">
+            <span class="status-dot"></span>
+            <span>Checking server</span>
+          </div>
+        </header>
+
+        <div class="suggestions" aria-label="Suggested prompts">
+          <button type="button" data-prompt="ช่วยอธิบาย AI automation แบบเข้าใจง่ายหน่อย">
+            Explain AI automation
+          </button>
+          <button type="button" data-prompt="ช่วยคิดไอเดียโปรเจกต์ automation สำหรับ portfolio 5 อัน">
+            Project ideas
+          </button>
+          <button type="button" data-prompt="ช่วยเขียนแผนเรียน JavaScript กับ API แบบ 4 สัปดาห์">
+            Learning plan
+          </button>
+        </div>
+
+        <section class="messages" id="messages" aria-live="polite"></section>
+
+        <form class="composer" id="chatForm">
+          <label class="sr-only" for="messageInput">Message</label>
+          <textarea
+            id="messageInput"
+            rows="2"
+            placeholder="Ask anything..."
+            autocomplete="off"
+            required
+          ></textarea>
+          <div class="composer-actions">
+            <button class="button secondary" type="button" id="clearChat">Clear</button>
+            <button class="button primary" type="submit" id="sendButton">Send</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="info-panel" aria-label="Project information">
+        <div class="info-card">
+          <p class="eyebrow">How it works</p>
+          <h2>Frontend + Backend</h2>
+          <p>
+            The browser sends messages to a Node server. The server calls the OpenAI API and keeps the API key hidden.
+          </p>
+        </div>
+        <div class="info-card">
+          <p class="eyebrow">Safety</p>
+          <h2>No API key in frontend</h2>
+          <p>
+            The API key lives in `.env` on the server only. This keeps the public code safe for GitHub.
+          </p>
+        </div>
+        <div class="info-card">
+          <p class="eyebrow">Storage</p>
+          <h2>Local history</h2>
+          <p>
+            Chat history is saved in this browser with localStorage and can be cleared any time.
+          </p>
+        </div>
+      </aside>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
