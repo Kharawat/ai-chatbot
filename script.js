@@ -1,4 +1,4 @@
-const STORAGE_KEY = "project-03-real-ai-chatbot-history";
+const STORAGE_KEY = "ai-chatbot-history";
 
 const messagesEl = document.querySelector("#messages");
 const form = document.querySelector("#chatForm");
@@ -17,7 +17,7 @@ function loadMessages() {
       {
         role: "assistant",
         content:
-          "สวัสดีครับ ผมเป็น AI chatbot ตัวจริงของ Project 03 ลองถามเรื่อง coding, automation, data, business workflow หรือให้ช่วยคิดโปรเจกต์ได้เลย",
+          "สวัสดีครับ ผมเป็น AI Chatbot ลองถามเรื่อง coding, automation, data หรือ business workflow ได้เลย",
       },
     ];
   }

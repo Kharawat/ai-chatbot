@@ -1,9 +1,9 @@
-# Project 03: AI Chatbot — Frontend
+# AI Chatbot
 
-Frontend interface for an AI chatbot, built with HTML, CSS, and JavaScript.
+Responsive AI chatbot interface with local chat history and API-ready UI.
 
-This public repository intentionally contains only the user interface. Server-side code, API keys, environment files, and API integrations are excluded.
+This public repository contains frontend code only. Server-side code and API credentials are kept private.
 
-## Run locally
+## Tech stack
 
-Open `index.html` in a browser to inspect the interface. Connecting a real model requires a separately hosted backend that keeps credentials private.
+HTML · CSS · JavaScript
