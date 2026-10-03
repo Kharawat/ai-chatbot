@@ -1,4 +1,7 @@
 const STORAGE_KEY = "ai-chatbot-history";
+const MAX_MESSAGES = 200;
+const MAX_CONTENT = 8000;
+let sending = false;
 
 const messagesEl = document.querySelector("#messages");
 const form = document.querySelector("#chatForm");
@@ -11,7 +14,8 @@ const suggestionButtons = document.querySelectorAll("[data-prompt]");
 let messages = loadMessages();
 
 function loadMessages() {
-  const stored = localStorage.getItem(STORAGE_KEY);
+  let stored;
+  try { stored = localStorage.getItem(STORAGE_KEY); } catch { return []; }
   if (!stored) {
     return [
       {
@@ -23,15 +27,17 @@ function loadMessages() {
   }
 
   try {
+    if (stored.length > 2 * 1024 * 1024) return [];
     const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.filter((message) => message && ["user", "assistant"].includes(message.role) && typeof message.content === "string" && message.content.length <= MAX_CONTENT).slice(-MAX_MESSAGES) : [];
   } catch {
     return [];
   }
 }
 
 function saveMessages() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  messages = messages.slice(-MAX_MESSAGES);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); } catch { /* Keep this session usable when storage is full or disabled. */ }
 }
 
 function renderMessages() {
@@ -65,6 +71,8 @@ async function checkServer() {
 }
 
 async function sendMessage(content) {
+  if (sending || typeof content !== "string" || !content.trim() || content.length > MAX_CONTENT) return;
+  sending = true;
   const userMessage = { role: "user", content };
   messages.push(userMessage);
   saveMessages();
@@ -78,6 +86,8 @@ async function sendMessage(content) {
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
+      signal: AbortSignal.timeout(60000),
+      redirect: "error",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: messages.filter((message) => ["user", "assistant"].includes(message.role)),
@@ -86,19 +96,21 @@ async function sendMessage(content) {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.error || "Request failed");
+      throw new Error("Request failed");
     }
 
+    if (typeof data?.reply !== "string" || data.reply.length > MAX_CONTENT) throw new Error("Invalid reply");
     messages.push({ role: "assistant", content: data.reply });
   } catch (error) {
     messages.push({
       role: "assistant",
-      content: `ยังตอบจาก AI ไม่ได้: ${error.message}`,
+      content: "ยังตอบจาก AI ไม่ได้ กรุณาลองใหม่ภายหลัง",
     });
   } finally {
     saveMessages();
     renderMessages();
     sendButton.disabled = false;
+    sending = false;
     input.focus();
   }
 }
@@ -106,7 +118,7 @@ async function sendMessage(content) {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const content = input.value.trim();
-  if (!content) return;
+  if (!content || content.length > MAX_CONTENT || sending) return;
   input.value = "";
   await sendMessage(content);
 });
@@ -120,7 +132,7 @@ input.addEventListener("keydown", (event) => {
 
 clearButton.addEventListener("click", () => {
   messages = [];
-  localStorage.removeItem(STORAGE_KEY);
+  try { localStorage.removeItem(STORAGE_KEY); } catch { /* storage disabled */ }
   messages = loadMessages();
   renderMessages();
 });
